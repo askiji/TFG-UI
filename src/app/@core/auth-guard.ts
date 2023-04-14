@@ -17,8 +17,9 @@ export class AuthGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    
+
     // Aquí puedes agregar la lógica para determinar si el usuario tiene acceso o no a la ruta protegida
+    // Despues de subcribe el primero es para cuando ha ido bien y el segundo es para cuando ha debuelto un error
     this.http.get(`${environment.apiUrl}/expired`).subscribe(() => {}, () => {
       return this.router.navigateByUrl('/login');
     });

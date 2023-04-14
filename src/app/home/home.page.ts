@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms'; // Importa el módulo FormsModule
 import { environment } from 'src/environments/environment';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Console } from 'console';
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -29,19 +29,20 @@ export class HomePage implements OnInit {
   guardiastTemp:any= [];
   guardiasDeProfesores : any =[];
   realName: string = '';
-  
-  
+
+
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
     private toastController: ToastController,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.createCalendar();
-    this.queryTeacher();  
-    this.getProofesores();  
+    this.queryTeacher();
+    this.getProofesores();
   }
   getProofesores(){
     this.http.get( `${environment.apiUrl}/profesor/guardias`).subscribe((res : any) => {
@@ -59,7 +60,7 @@ export class HomePage implements OnInit {
       this.isModalOpen = false;
       guardia.nombreSuplente = this.route.snapshot.paramMap.get('teacher');
     });
-  
+
 
   }
   eliminarGuardia(guardia : any){
@@ -68,7 +69,7 @@ export class HomePage implements OnInit {
       this.presentToast("Se le ha desasignado como suplente")
       this.isModalOpen = false;
     });
-  
+
   }
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
@@ -79,9 +80,9 @@ export class HomePage implements OnInit {
       if (document.body.scrollHeight > 0) {
         this.altura = document.body.scrollHeight + 'px';
       }
-      
+
     }, 500);
-    
+
   }
 
   @HostListener('window:resize', ['$event'])
@@ -94,17 +95,23 @@ export class HomePage implements OnInit {
     const nombre = this.route.snapshot.paramMap.get('teacher');
 
     this.http.get<{nombre: string, data: any; id: string}>(`${environment.apiUrl}/profesores/${nombre}`).subscribe(result => {
-      this.realName = Object.keys(result.data)[0];
-      Object.keys(result.data).forEach((element, index) => {
-        if (index == 0) {
-          this.mapHorario(result, element)
-        }
-        
-        this.mapAsignaturas(result, element, index);
-        this.getHeight();
-      
-      });
-      
+      if(result){
+
+        this.realName = Object.keys(result.data)[0];
+        Object.keys(result.data).forEach((element, index) => {
+          if (index == 0) {
+            this.mapHorario(result, element)
+          }
+
+          this.mapAsignaturas(result, element, index);
+          this.getHeight();
+
+        });
+      }
+      else{
+        this.router.navigateByUrl(`/selecion`)
+      }
+
     })
   }
 
@@ -124,10 +131,10 @@ export class HomePage implements OnInit {
     str2.forEach(element => {
       if(str3.includes(element)){
         count++;
-        
+
       }
     });
-    
+
     return count >2 ;
   }
 
@@ -140,23 +147,23 @@ export class HomePage implements OnInit {
       "Viernes": 5
     }
 
-    
+
     Object.keys(result.data[element]).forEach((asignature, j) => {
       if(j==0) return;
       this.data[j-1][map[element]] = result.data[element][asignature]
       if (this.data[j-1][map[element]] && this.data[j-1][map[element]].toLowerCase().indexOf('guardia') > -1) {
         this.http.get<any>(`${environment.apiUrl}/ausencia/${map[element]}`).subscribe(ausencias => {
           console.log('asencias', ausencias);
-          
+
           if(ausencias.length > 0){
             var text :any ="";
             ausencias.forEach((element : any) => {
-              
+
               if (this.guardiastTemp[j-1][i]) {
                 this.guardiastTemp[j-1][i].push({
                   id: element.id,
                   fecha: element.fecha,
-                  nombre: element.nombre, 
+                  nombre: element.nombre,
                   clase: element.clases[j-1],
                   nombreSuplente : element.nombreSuplente
                 });
@@ -164,30 +171,30 @@ export class HomePage implements OnInit {
                 this.guardiastTemp[j-1][i] = [{
                   id: element.id,
                   fecha: element.fecha,
-                  nombre: element.nombre, 
+                  nombre: element.nombre,
                   clase: element.clases[j-1],
                   nombreSuplente : element.nombreSuplente
                 }];
                 debugger
               }
-              
+
               console.log('gg', this.guardiastTemp);
               text = text + element.clases[j-1] + `${element.nombreSuplente ? ' (' + element.nombreSuplente + ')' : ''}`;
-           
+
             });
             if(text != 'null'){
-              
+
               const cell = `<div class="click" style="background-color: greenyellow !important; color: black; " >${text}</div>`;
               this.data[j-1][map[element]] = this.sanitizer.bypassSecurityTrustHtml(cell);
             }
           }
         });
-      }  
+      }
     })
   }
 
   show(cell?: any, i?: any, j?:any) {
-    
+
     if (cell.changingThisBreaksApplicationSecurity && cell.changingThisBreaksApplicationSecurity.toString().indexOf('click') > -1) {
       const map : any ={
         "1":"LUNES",
@@ -195,18 +202,18 @@ export class HomePage implements OnInit {
         "3" :"MIÉRCOLES",
         "4" : "JUEVES",
         "5": "VIERNES"
-      }  
+      }
       this.profesoresDeGuardia = this.datosProfesores[map[j]][i].split(")").filter((profe:string) => profe.length > 1);
-      console.log(); 
-      
+      console.log();
+
       this.guardiasDeProfesores= this.guardiastTemp[i][j]
       this.setOpen(true);
     }
-    
+
   }
 
   createCalendar() {
-    for (let i =0 ; i < 19 ; i++){
+    for (let i =0 ; i < 17 ; i++){
       this.data.push([])
       this.guardiastTemp.push([])
       for(let j = 0 ; j< 6; j++ ){
@@ -220,7 +227,7 @@ export class HomePage implements OnInit {
 
   }
   onFechaAusenciaChange(event: any){
-    
+
     console.log('Fecha seleccionada:', event);
 
   }
@@ -243,7 +250,7 @@ export class HomePage implements OnInit {
     this.data.forEach((elem : any, index: any) => {classes.push(this.data[index][dayOfWeekName])})
     console.log(classes)
     this.http.post(`${environment.apiUrl}/ausencia`, {
-      nombre: this.route.snapshot.paramMap.get('teacher'), 
+      nombre: this.route.snapshot.paramMap.get('teacher'),
       fecha : new Date(this.fechaAusencia).getTime(),
       clases: classes
     }).subscribe((res) => {

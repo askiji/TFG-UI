@@ -16,7 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent) 
+    loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent)
   },
   {
     path: '',
@@ -27,5 +27,12 @@ export const routes: Routes = [
   {
     path: 'singup',
     loadComponent: () => import('./singup/singup.component').then((m) => m.SingupComponent)
+  },
+  {
+    path: 'selecion',
+    loadComponent: () => import('./selection/selection.component').then((m) => {
+      return m.SelectionComponent
+    })
+
   },
 ];
