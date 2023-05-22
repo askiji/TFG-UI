@@ -1,3 +1,9 @@
-<ion-list >
-<ion-item *ngFor="let foo of res" (click)="selecionar(foo)" [innerHTML]="foo.nombre"></ion-item>
-</ion-list>
+<ion-content>
+  <ion-searchbar [debounce]="1000" (ionChange)="handleInput($event)"></ion-searchbar>
+
+  <ion-list>
+    <ion-item *ngFor="let result of results">
+      <ion-label [innerHTML]="result.nombre" (click)="selecionar(result)"></ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

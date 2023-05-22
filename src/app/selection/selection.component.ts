@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
   imports:[IonicModule,CommonModule]
 })
 export class SelectionComponent  implements OnInit {
-
+  results: any = [];
   res : any =[];
   constructor(private _http: HttpClient, private router: Router) { }
 
@@ -27,11 +27,15 @@ export class SelectionComponent  implements OnInit {
     })
   }
   selecionar(foo :any){
-    console.log(foo.id)
+    console.log(foo)
     this._http.post(`${environment.apiUrl}/profesores/asignar`, foo).subscribe((res: any) =>{
       console.log(res)
       this.router.navigateByUrl('/profesor/' + res.nombre)
     })
 
+  }
+  handleInput(event : any) {
+    const query = event.target.value.toLowerCase();
+    this.results = this.res.filter((d: any) => d.nombre.toLowerCase().indexOf(query) > -1);
   }
 }
