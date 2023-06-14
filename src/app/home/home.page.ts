@@ -34,23 +34,31 @@ export class HomePage implements OnInit {
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
-    private toastController: ToastController,
     private sanitizer: DomSanitizer,
+    private toastController: ToastController,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // this.createCalendar();
+    // this.queryTeacher();
+    // this.getProofesores();
+  }
+
+  ionViewDidEnter(): void {
     this.createCalendar();
     this.queryTeacher();
     this.getProofesores();
   }
+
   getProofesores(){
     this.http.get( `${environment.apiUrl}/profesor/guardias`).subscribe((res : any) => {
-      console.log(res);
+      console.log('aaaaa', res);
       this.datosProfesores = res.data;
     } );
   }
   asegurarGuardia(guardia : any){
+
     if(guardia.nombreSuplente ){
       this.eliminarGuardia(guardia);
       return;
@@ -175,15 +183,14 @@ export class HomePage implements OnInit {
                   clase: element.clases[j-1],
                   nombreSuplente : element.nombreSuplente
                 }];
-                debugger
+
               }
 
               console.log('gg', this.guardiastTemp);
               text = text + element.clases[j-1] + `${element.nombreSuplente ? ' (' + element.nombreSuplente + ')' : ''}`;
 
             });
-            if(text != 'null'){
-
+            if(text != 'null' && this.guardiastTemp[j-1][i][0].nombre != this.route.snapshot.paramMap.get('teacher')){
               const cell = `<div class="click" style="background-color: greenyellow !important; color: black; " >${text}</div>`;
               this.data[j-1][map[element]] = this.sanitizer.bypassSecurityTrustHtml(cell);
             }
@@ -254,7 +261,7 @@ export class HomePage implements OnInit {
       fecha : new Date(this.fechaAusencia).getTime(),
       clases: classes
     }).subscribe((res) => {
-      this.presentToast('Su asuencia OK')
+      this.presentToast('Su ausencia se ha guardado en la base da datos')
     }, (err) => {
       this.presentToast('No se ha podido guardar la ausencia');
     });

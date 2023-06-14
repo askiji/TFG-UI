@@ -4,6 +4,7 @@ import { Component, NgModule, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-singup',
@@ -34,14 +35,14 @@ export class SingupComponent  implements OnInit {
   // }
   submitForm() {
     // console.log(this.username , this.email , this.password);
-    const url = 'http://localhost:8080/api/auth/signup'
+    const url = `${environment.apiUrl}/api/auth/signup`
     console.log(this.registroForm.value);
     this.http.post(url ,this.registroForm.value).subscribe(res => {
       this.presentToast('middle' ,"Se ha registrado correctamente")
       this._router.navigateByUrl('/login')
     },
     err => {
-this.presentToast('middle', 'No se ha podido registrar')
+      this.presentToast('middle', 'No se ha podido registrar')
     });
     // Aquí puedes agregar la lógica para enviar los datos del formulario al servidor
   }

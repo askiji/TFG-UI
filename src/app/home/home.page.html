@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Guardias IES Sampedro
-    </ion-title>
+
   </ion-toolbar>
 </ion-header>
 
@@ -26,7 +24,7 @@
       <tbody>
       <tr *ngFor="let row of data; let i = index">
           <td [ngClass]="{ 'sticky-cell': j == 0,
-              'recreo': cell== 'recreo' }" 
+              'recreo': cell== 'recreo' }"
             *ngFor="let cell of row; let j = index"
             [innerHTML]="cell"
             (click)="show(cell, i, j)"
@@ -38,7 +36,9 @@
   </div>
   <button (click)="calendario()" class="boton-flotante">Ausencia</button>
   <div class="contenedor" *ngIf="showCalendar">
-  <ion-datetime [(ngModel)]="fechaAusencia" (ngModelChange)="onFechaAusenciaChange($event)" (ionChange)="onChange($event)" [showDefaultButtons]="true" (ionCancel)="onCancel()"></ion-datetime>
+  <ion-datetime [(ngModel)]="fechaAusencia" (ngModelChange)="onFechaAusenciaChange($event)" (ionChange)="onChange($event)" [showDefaultButtons]="true" (ionCancel)="onCancel()" doneText="Confirmar Dia" cancelText="Salir">
+
+  </ion-datetime>
   </div>
   <ion-toast  [isOpen]="true" message="This toast will disappear after 5 seconds" [duration]="5000"></ion-toast>
 </ion-content>
@@ -46,9 +46,9 @@
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Modal</ion-title>
+        <ion-title>Seleccion de guardia</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="setOpen(false)">Close</ion-button>
+          <ion-button (click)="setOpen(false)">Cerrar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>

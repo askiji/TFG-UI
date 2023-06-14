@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -23,9 +24,13 @@ export class LoginComponent  implements OnInit {
   ) { }
 
   login() {
-    const url = 'http://localhost:8080/api/auth/signin';
+    const url = `${environment.apiUrl}/api/auth/signin`;
     this.http.post<{username: string}>(url, this.loginData).subscribe((res) => {
-      if (res.username) {
+      // tengo que sacarle el tipo de usuario para que se meta por lo del admin
+      if(res.username === 'admin'){
+        this.router.navigateByUrl('/admin')
+      }
+    else if (res.username) {
         this.router.navigateByUrl(`/profesor/${res.username}`);
       }
     }, (error) => {
@@ -33,9 +38,9 @@ export class LoginComponent  implements OnInit {
     });
   }
 registro(){
-  const url= "http://localhost:8080/api/auth/singup";
+  const url= `${environment.apiUrl}/api/auth/singup`;
   this.router.navigateByUrl('/singup');
- 
+
 }
   ngOnInit() {}
 

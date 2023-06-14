@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
@@ -15,7 +15,9 @@ import { environment } from 'src/environments/environment';
 export class SelectionComponent  implements OnInit {
   results: any = [];
   res : any =[];
-  constructor(private _http: HttpClient, private router: Router) { }
+  isModalOpen = false;
+  profesorSelected: any;
+  constructor(private _http: HttpClient, private router: Router, private cdRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.peticion();
@@ -26,16 +28,23 @@ export class SelectionComponent  implements OnInit {
       this.res = res;
     })
   }
-  selecionar(foo :any){
+  seleccionar(foo :any){
     console.log(foo)
     this._http.post(`${environment.apiUrl}/profesores/asignar`, foo).subscribe((res: any) =>{
       console.log(res)
-      this.router.navigateByUrl('/profesor/' + res.nombre)
+      this.isModalOpen = false;
+      this.cdRef.detectChanges();
+      this.router.navigate(['profesor', res.nombre])
     })
 
   }
   handleInput(event : any) {
     const query = event.target.value.toLowerCase();
     this.results = this.res.filter((d: any) => d.nombre.toLowerCase().indexOf(query) > -1);
+  }
+
+  setOpen(isOpen: boolean, profesor?: any) {
+    this.isModalOpen = isOpen;
+    this.profesorSelected = profesor;
   }
 }

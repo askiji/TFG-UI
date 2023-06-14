@@ -1,10 +1,10 @@
 
 <div class="login-container">
   <form (ngSubmit)="login()" #loginForm="ngForm">
-    <input type="email" name="email" placeholder="Correo electrónico" [(ngModel)]="loginData.username" required>
+    <input type="email" name="email" placeholder="Nombre de usuario" [(ngModel)]="loginData.username" required>
     <input type="password" name="password" placeholder="Contraseña" [(ngModel)]="loginData.password" required>
     <button type="submit" [disabled]="!loginForm.form.valid">Iniciar sesión</button>
+    <button (click)="registro()" >registrarse</button>
   </form>
- 
+
 </div>
-<button (click)="registro()" >registrarse</button>
